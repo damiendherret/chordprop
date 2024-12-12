@@ -7,6 +7,10 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 // https://vite.dev/config/
 export default defineConfig({
   base: "/chordprop/",
+  build: {
+    outDir: './docs',
+    emptyOutDir: true, // also necessary
+  },
   plugins: [
     vue(),
     vueDevTools(),
