@@ -1,5 +1,4 @@
 <script setup>
-import { defineProps } from 'vue';
 import { ref } from 'vue';
 
 import Chord from "./Chord.vue";

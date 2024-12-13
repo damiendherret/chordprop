@@ -1,7 +1,9 @@
 <script setup>
 import Chord from "./components/Chord.vue";
 import ChordProposalFamily from "./components/ChordProposalFamily.vue";
-import { reactive } from 'vue';
+import { reactive,ref } from 'vue';
+
+import * as Tone from "tone";
 
 //--------------------------------------------------------------------------------------------------------
 // Constants
@@ -230,12 +232,15 @@ function proposeChords(chordRef){
 }
 
 
+
+
 function chordClickedDetected(chord, scaleName, tonic){
   console.log("I am parent and received : " + chord.val + chord.quality + " - " + tonic + " " + scaleName );
 
   // si c'est ele deuxième accord; on doit mmetre à jour la couleur et la onctin du premier accord
-  if (chord.length=1){
+  if (chordProgression.length==1){
     if (scaleName) { // si c'est dans le cas d'un accord de gamme, sinon le premier accord reste indéfini
+      console.log("Change first");
       var firstChord = chordProgression.pop();
       firstChord.color = chord.color;
       firstChord.harmony = chord.harmony.split('>')[0].trim();
@@ -249,6 +254,8 @@ function chordClickedDetected(chord, scaleName, tonic){
   // on ajoute l'accord à la progression
   chordProgression.push(chord);
   
+  playChord(chord);
+
   // on lance le nouveau calcul
   proposeChords(chord);
 
@@ -256,10 +263,85 @@ function chordClickedDetected(chord, scaleName, tonic){
 }
 
 
+function playSound(chord){
+  //val: "C",
+  //quality: "M", //M, m, dim, aug
+
+
+  var root = chord.val + "4";
+
+  var notes;
+  (sharpChromaticsNotes.includes(chord.val)) ? notes = sharpChromaticsNotes : notes = flatChromaticsNotes;
+
+  var intervalThird = 0;
+  var intervalFifth = 0;
+  var index = notes.indexOf(chord.val);
+
+  switch (chord.quality) {
+    case "M":
+      intervalThird = 4;
+      intervalFifth = 7;
+      break;
+    case "m":
+      intervalThird = 3;
+      intervalFifth = 7;
+      break;
+    case "dim":
+      intervalThird = 3;
+      intervalFifth = 6;
+      break;
+    case "aug":
+      intervalThird = 4;
+      intervalFifth = 8;
+      break;
+    default:
+      intervalThird = 4;
+      intervalFifth = 7;
+      break;
+  }
 
 
 
 
+  var third = notes.at((index+intervalThird)%12) + "4";
+  var fifth = notes.at((index+intervalFifth)%12) + "4";
+  console.log("index : " + index );
+  console.log("intervalThird : " + intervalThird );
+  console.log("intervalFifth : " + intervalFifth );
+  console.log("Paying : " + root + " / " + third + " / " + fifth);
+
+  const synth = new Tone.PolySynth(Tone.Synth).toDestination();
+  const now = Tone.now();
+  synth.triggerAttack(root, now);
+  synth.triggerAttack(third, now);
+  synth.triggerAttack(fifth, now);
+  synth.triggerRelease([root, third, fifth], now + 0.5);
+}
+
+function playChord(chord){
+  //const synth = new Tone.PolySynth(Tone.Synth).toDestination();
+  //const now = Tone.now();
+  //synth.triggerAttack("C4", now);
+  //synth.triggerAttack("Eb4", now);
+  //synth.triggerAttack("G4", now);
+  //synth.triggerRelease(["C4", "Eb4", "G4"], now + 0.5);
+  if (audioChecked.value==true) playSound(chord)
+
+}
+
+
+function stopStartAudioEngine(){
+  console.log("audioChecked : " + audioChecked.value);
+  if (audioChecked.value==false){ //hmm vue v-model must change value afterward...
+    console.log("Starting audio ... ");
+    Tone.start();
+	  console.log("... audio is ready");
+  }
+  else{
+    console.log("Stoping audio ");	  
+  }
+
+}
 
 //--------------------------------------------------------------------------------------------------------
 // Main
@@ -269,19 +351,19 @@ function chordClickedDetected(chord, scaleName, tonic){
 // Chord Progression init
 const chordProgression = reactive([]); 
 var firstChord = {
-  val: "C",
-  quality: "M", //M, m, dim, aug
+  val: "Bb",
+  quality: "m", //M, m, dim, aug
   harmony: "-",
   color: 0
 }
-
 chordProgression.push(firstChord);
 
 //Chord proposal
 const chordProposalFamilies = reactive([]); 
-
 proposeChords(firstChord);
 
+//Audio
+const audioChecked = ref(false);
 
 
 
@@ -293,8 +375,18 @@ proposeChords(firstChord);
 
 <button @click="addChordToprogression">Add chord !! </button>
 <button @click="proposeChords">ProposeChord </button>
+<button @click="playSound">PlaySound </button>
 
-<div class="app-title fa">Chord Proposer v2</div>
+<div class="app-title fa">Chord Proposer</div>
+<div class="audio"> 
+  <div class="audioText">Audio : &nbsp </div>
+  <div class="audioButton">
+    <label class="switch">
+      <input type="checkbox" v-model="audioChecked" @click="stopStartAudioEngine">
+      <span class="slider round"></span>
+    </label>
+  </div>
+</div>
 
 
 <div class="chord-area">

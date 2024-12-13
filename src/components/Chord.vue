@@ -1,6 +1,4 @@
 <script setup>
-import { defineProps, defineEmits } from 'vue';
-
 
 const props = defineProps({
   chord: Object,
@@ -11,7 +9,7 @@ const emit = defineEmits(['chordClicked']);
 
 
 const mainClass="card-header";
-const colorClass="color"+props.chord.color;
+const colorClass="color";
 
 
 </script>
@@ -19,7 +17,8 @@ const colorClass="color"+props.chord.color;
 
 <template>
     <div class="card-wrap" @click="$emit('chordClicked', chord)">
-      <div :class="[mainClass, colorClass]">
+      <div :class="[mainClass, colorClass+chord.color]">
+      <!--div class="card-header color{{ chord.color || 0 }}"-->
         <i>{{ chord.val + ((chord.quality=="M") ? "" : chord.quality )|| '-' }}</i>
       </div>
       <div class="card-content">
