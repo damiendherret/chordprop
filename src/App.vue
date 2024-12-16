@@ -263,6 +263,14 @@ function chordClickedDetected(chord, scaleName, tonic){
 }
 
 
+
+function removeFromProgression(){
+  console.log("removeFromProgression");
+  chordProgression.pop();
+  proposeChords(chordProgression[chordProgression.length-1]);
+
+}
+
 function playSound(chord){
   //val: "C",
   //quality: "M", //M, m, dim, aug
@@ -351,8 +359,8 @@ function stopStartAudioEngine(){
 // Chord Progression init
 const chordProgression = reactive([]); 
 var firstChord = {
-  val: "Bb",
-  quality: "m", //M, m, dim, aug
+  val: "C",
+  quality: "M", //M, m, dim, aug
   harmony: "-",
   color: 0
 }
@@ -392,7 +400,7 @@ const audioChecked = ref(false);
 <div class="chord-area">
 
   <div class="chord-progression">
-    <Chord v-for="chord in chordProgression" v-bind:chord="chord" progression="true"/>
+    <Chord v-for="(chord, index) in chordProgression" v-bind:chord="chord" v-bind:last="((index!=0) && (index==(chordProgression.length-1)))" progression="true" v-on:removeFromProgression="removeFromProgression"/>
   </div>
 
   <div class="nextchord-proposal">

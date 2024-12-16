@@ -57,7 +57,17 @@ body{
   justify-content: flex-end;
 }
 
+.closeX{
+  color: var(--color-text);
+  font-size: 15px;
+  text-align: left;
+  z-index: 5;
+}
 
+.closeX:hover{
+  color: var(--card1-gradient-color1);
+
+}
 
 /* CHORD AREA ------------------------------------------------*/
 
@@ -131,6 +141,7 @@ body{
   cursor: pointer;
   transition: all .2s ease-in-out;
   margin-bottom: 0px;
+  
 }
 .card-wrap:hover{
   transform: scale(1.1);
