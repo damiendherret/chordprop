@@ -1,7 +1,12 @@
 <script setup>
 import Chord from "./components/Chord.vue";
+import Modal from './components/Modal.vue'
 import ChordProposalFamily from "./components/ChordProposalFamily.vue";
 import { reactive,ref } from 'vue';
+
+
+const showModal = ref(false);
+
 
 import * as Tone from "tone";
 
@@ -234,31 +239,49 @@ function proposeChords(chordRef){
 
 
 
-function chordClickedDetected(chord, scaleName, tonic){
-  console.log("I am parent and received : " + chord.val + chord.quality + " - " + tonic + " " + scaleName );
+function chordClickedDetected(chord, scaleName, tonic, progression, first){
 
-  // si c'est ele deuxième accord; on doit mmetre à jour la couleur et la onctin du premier accord
-  if (chordProgression.length==1){
-    if (scaleName) { // si c'est dans le cas d'un accord de gamme, sinon le premier accord reste indéfini
-      console.log("Change first");
-      var firstChord = chordProgression.pop();
-      firstChord.color = chord.color;
-      firstChord.harmony = chord.harmony.split('>')[0].trim();
-      chordProgression.push(firstChord);
+  //chord : chord clicked
+  //scaleName : scale name if comming from a family
+  //tonic : tonic name if comming from a family
+  //progression: true if comming from progression
+  //first: true if first comming from progression
 
-      chord.harmony = chord.harmony.split('>')[1].trim();
+  console.log("I am chordClickedDetected and received : " 
+                + "Chord : " + chord.val + " / " 
+                + "Chord quality : " + chord.quality + " / " 
+                + "ScaleName : " + scaleName + " / "
+                + "Tonic : " + tonic + " / " 
+                + "Progression : " + progression + " / " 
+                + "First : " + first + " / " 
+  );
+
+
+  if (progression){
+    if ((first)&&(chordProgression.length==1)){ // pour choisir le premier accord
+      showModal.value = true;
     }
+  }
+  else {
+    // si c'est ele deuxième accord; on doit mmetre à jour la couleur et la onctin du premier accord
+    if (chordProgression.length==1){
+      if (scaleName) { // si c'est dans le cas d'un accord de gamme, sinon le premier accord reste indéfini
+        console.log("Change first");
+        var firstChord = chordProgression.pop();
+        firstChord.color = chord.color;
+        firstChord.harmony = chord.harmony.split('>')[0].trim();
+        chordProgression.push(firstChord);
+
+        chord.harmony = chord.harmony.split('>')[1].trim();
+      }
     
+    }
+    chordProgression.push(chord);
+    // on lance le nouveau calcul
+    proposeChords(chord);
   }
 
-  // on ajoute l'accord à la progression
-  chordProgression.push(chord);
-  
   playChord(chord);
-
-  // on lance le nouveau calcul
-  proposeChords(chord);
-
 
 }
 
@@ -403,9 +426,13 @@ function playProgression(){
 
 <template>
 
-<button @click="addChordToprogression">Add chord !! </button>
+<!--button @click="addChordToprogression">Add chord !! </button>
 <button @click="proposeChords">ProposeChord </button>
-<button @click="playSound">PlaySound </button>
+<button id="show-modal" @click="showModal = true">Show Modal</button>
+<button @click="playSound">PlaySound </button-->
+
+
+
 
 <div class="app-title fa">Chord Proposer</div>
 <div class="audio"> 
@@ -429,17 +456,39 @@ function playProgression(){
       
 
 
-    <Chord v-for="(chord, index) in chordProgression" v-bind:chord="chord" v-bind:last="((index!=0) && (index==(chordProgression.length-1)))" progression="true" v-on:removeFromProgression="removeFromProgression"/>
+    <Chord v-for="(chord, index) in chordProgression" 
+        v-bind:chord="chord" 
+        v-bind:last="((index!=0) && (index==(chordProgression.length-1)))"
+        v-bind:first="(index==0)" 
+        v-bind:progression="true" 
+        v-on:removeFromProgression="removeFromProgression"
+        v-on:chordClicked="chordClickedDetected"
+    />
   </div>
 
   <div class="nextchord-proposal">
 
-    <ChordProposalFamily v-for="chordFamily in chordProposalFamilies" v-bind:chordFamily="chordFamily" v-on:chordClicked="chordClickedDetected"/>
+    <ChordProposalFamily v-for="chordFamily in chordProposalFamilies" 
+        v-bind:chordFamily="chordFamily" 
+        v-on:chordClicked="chordClickedDetected"
+    />
 
 
 
   </div>
 
 </div>
+
+
+
+<Teleport to="body">
+  <!-- use the modal component, pass in the prop -->
+  <modal :show="showModal" @close="showModal = false">
+    <template #header>
+      <h3>Choose firts chord</h3>
+    </template>
+  </modal>
+</Teleport>
+
 
 </template>

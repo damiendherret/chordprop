@@ -34,7 +34,7 @@ function foldUnfold(){
                 <Chord 
                   v-for="chord in chordFamily.chords" 
                   v-bind:chord="chord" 
-                  v-on:chordClicked="$emit('chordClicked',chord,chordFamily.scaleName,chordFamily.scaleTonic)"
+                  v-on:chordClicked="$emit('chordClicked',chord,chordFamily.scaleName,chordFamily.scaleTonic,false,false)"
                 />
             </div>
         </div>

@@ -2,8 +2,9 @@
 
 const props = defineProps({
   chord: Object,
-  progression: String,
-  last: Boolean
+  progression: Boolean,
+  last: Boolean,
+  first: Boolean
 });
 
 const emit = defineEmits(['chordClicked','removeFromProgression']);
@@ -17,7 +18,7 @@ const colorClass="color";
 
 
 <template>
-    <div class="card-wrap" @click="$emit('chordClicked', chord)">
+    <div class="card-wrap" @click="$emit('chordClicked', chord, null, null, progression, first)">
       <div :class="[mainClass, colorClass+chord.color]">
       <!--div class="card-header color{{ chord.color || 0 }}"-->
         <i>{{ chord.val + ((chord.quality=="M") ? "" : chord.quality )|| '-' }}</i>
@@ -34,6 +35,6 @@ const colorClass="color";
       </div>
     </div>
 
-    <div v-if="progression" class="next">></div>
+    <div v-if="progression" class="next"><i class="fa-solid fa-arrow-right playButton"></i></div>
 
 </template>
