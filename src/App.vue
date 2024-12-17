@@ -1,17 +1,14 @@
 <script setup>
+import { reactive,ref } from 'vue';
+//components
 import Chord from "./components/Chord.vue";
 import Modal from './components/Modal.vue'
 import ChordProposalFamily from "./components/ChordProposalFamily.vue";
-import { reactive,ref } from 'vue';
-
-
-const showModal = ref(false);
-
-
+//lib
 import * as Tone from "tone";
 
 //--------------------------------------------------------------------------------------------------------
-// Constants
+// Constants and global variables
 //
 //--------------------------------------------------------------------------------------------------------
 const sharpChromaticsNotes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
@@ -19,6 +16,21 @@ const flatChromaticsNotes = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A
 const usesSharp = ["C", "G", "D", "A", "E", "B", "F#"];
 const usesFlat = ["F", "Bb", "Eb", "Ab", "Db"];
 
+const showModal = ref(false);
+const scaleColors = new Map();
+var colorcount = 1;
+
+const chordProgression = reactive([]); 
+var firstChord = {
+  val: "C",
+  quality: "M", //M, m, dim, aug
+  harmony: "-",
+  color: 0
+}
+
+const chordProposalFamilies = reactive([]); 
+const audioChecked = ref(false);
+const playStyleButton = ref("fa-regular");
 
 //--------------------------------------------------------------------------------------------------------
 // Scales
@@ -40,8 +52,6 @@ const harmonicMinorScale = {
   intervals: ["2","1","2","2","1","2","2"]
 }; 
 scales.push(harmonicMinorScale);
-
-
 
 
 
@@ -99,8 +109,7 @@ function numeralsToRoman(degre,quality){
 }
 
 
-const scaleColors = new Map();
-var colorcount = 1;
+
 function getColorForTonicScale(tonic,scale){
   if (scaleColors.has(tonic+scale.id)){
     return scaleColors.get(tonic+scale.id);
@@ -110,6 +119,13 @@ function getColorForTonicScale(tonic,scale){
     colorcount++;
     return scaleColors.get(tonic+scale.id)
   }
+}
+
+function mouseOverPlay(){
+  playStyleButton.value = "fa-solid";
+}
+function mouseLeave(){
+  playStyleButton.value = "fa-regular";
 }
 
 //--------------------------------------------------------------------------------------------------------
@@ -126,7 +142,6 @@ function addChordToprogression(){
   chordProgression.push(newChord);
   console.log("chordProgression : "+ chordProgression.length);
 }
-
 
 
 function addFamilyToPropositions(tonic,scale,degree){
@@ -161,7 +176,6 @@ function addFamilyToPropositions(tonic,scale,degree){
   chordProposalFamilies.push(family);
   
 }
-
 
 function getTonicFromScaleandDegree(chordRef,scale,degree){
 
@@ -294,6 +308,14 @@ function removeFromProgression(){
 
 }
 
+
+
+
+//---------------------------------------------------------
+// AUDIO
+//---------------------------------------------------------
+
+
 function playSound(chord, time){
   //val: "C",
   //quality: "M", //M, m, dim, aug
@@ -331,8 +353,6 @@ function playSound(chord, time){
   }
 
 
-
-
   var third = notes.at((index+intervalThird)%12) + "4";
   var fifth = notes.at((index+intervalFifth)%12) + "4";
   console.log("index : " + index );
@@ -354,12 +374,7 @@ function playSound(chord, time){
 }
 
 function playChord(chord,time){
-  //const synth = new Tone.PolySynth(Tone.Synth).toDestination();
-  //const now = Tone.now();
-  //synth.triggerAttack("C4", now);
-  //synth.triggerAttack("Eb4", now);
-  //synth.triggerAttack("G4", now);
-  //synth.triggerRelease(["C4", "Eb4", "G4"], now + 0.5);
+
   if (audioChecked.value==true) playSound(chord, time)
 
 }
@@ -378,40 +393,6 @@ function stopStartAudioEngine(){
 
 }
 
-//--------------------------------------------------------------------------------------------------------
-// Main
-//
-//--------------------------------------------------------------------------------------------------------
-
-// Chord Progression init
-const chordProgression = reactive([]); 
-var firstChord = {
-  val: "C",
-  quality: "M", //M, m, dim, aug
-  harmony: "-",
-  color: 0
-}
-chordProgression.push(firstChord);
-
-//Chord proposal
-const chordProposalFamilies = reactive([]); 
-proposeChords(firstChord);
-
-//Audio
-const audioChecked = ref(false);
-
-
-
-
-
-const playStyleButton = ref("fa-regular");
-function mouseOverPlay(){
-  playStyleButton.value = "fa-solid";
-}
-function mouseLeave(){
-  playStyleButton.value = "fa-regular";
-}
-
 function playProgression(){
   for (let index = 0; index < chordProgression.length; index++) {
     const chord = chordProgression[index];
@@ -420,6 +401,20 @@ function playProgression(){
   }
 
 }
+
+
+
+//--------------------------------------------------------------------------------------------------------
+// Main
+//
+//--------------------------------------------------------------------------------------------------------
+
+// Chord Progression init
+chordProgression.push(firstChord);
+
+//Chord proposal
+proposeChords(firstChord);
+
 
 
 </script>
