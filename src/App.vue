@@ -271,10 +271,9 @@ function removeFromProgression(){
 
 }
 
-function playSound(chord){
+function playSound(chord, time){
   //val: "C",
   //quality: "M", //M, m, dim, aug
-
 
   var root = chord.val + "4";
 
@@ -319,21 +318,26 @@ function playSound(chord){
   console.log("Paying : " + root + " / " + third + " / " + fifth);
 
   const synth = new Tone.PolySynth(Tone.Synth).toDestination();
-  const now = Tone.now();
+  var now = Tone.now();
+
+  if (time){
+    now = time;
+  }
+
   synth.triggerAttack(root, now);
   synth.triggerAttack(third, now);
   synth.triggerAttack(fifth, now);
   synth.triggerRelease([root, third, fifth], now + 0.5);
 }
 
-function playChord(chord){
+function playChord(chord,time){
   //const synth = new Tone.PolySynth(Tone.Synth).toDestination();
   //const now = Tone.now();
   //synth.triggerAttack("C4", now);
   //synth.triggerAttack("Eb4", now);
   //synth.triggerAttack("G4", now);
   //synth.triggerRelease(["C4", "Eb4", "G4"], now + 0.5);
-  if (audioChecked.value==true) playSound(chord)
+  if (audioChecked.value==true) playSound(chord, time)
 
 }
 
@@ -377,6 +381,24 @@ const audioChecked = ref(false);
 
 
 
+const playStyleButton = ref("fa-regular");
+function mouseOverPlay(){
+  playStyleButton.value = "fa-solid";
+}
+function mouseLeave(){
+  playStyleButton.value = "fa-regular";
+}
+
+function playProgression(){
+  for (let index = 0; index < chordProgression.length; index++) {
+    const chord = chordProgression[index];
+    playChord(chord,Tone.now()+index*0.5);
+    
+  }
+
+}
+
+
 </script>
 
 <template>
@@ -400,6 +422,13 @@ const audioChecked = ref(false);
 <div class="chord-area">
 
   <div class="chord-progression">
+    <!--i class="fa-solid fa-circle-play" ></i>
+    <i class="fa-regular fa-circle-play"></i-->
+    
+    <i @click="playProgression" @mouseover="mouseOverPlay" @mouseleave="mouseLeave" :class="[playStyleButton,'fa-circle-play','playButton']"></i>
+      
+
+
     <Chord v-for="(chord, index) in chordProgression" v-bind:chord="chord" v-bind:last="((index!=0) && (index==(chordProgression.length-1)))" progression="true" v-on:removeFromProgression="removeFromProgression"/>
   </div>
 
