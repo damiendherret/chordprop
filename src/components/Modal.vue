@@ -1,7 +1,24 @@
 <script setup>
+import { reactive,ref } from 'vue';
 const props = defineProps({
   show: Boolean
 })
+
+
+const note = ref("A");
+const noteBis = ref("");
+const quality = ref("");
+
+const buttonClass = "chordConfig";
+
+const picked = ref('One')
+
+/*
+:class="{ selected: isActive, 'text-danger': hasError }"
+
+chordConfig 
+active: isActive
+*/
 </script>
 
 <template>
@@ -13,7 +30,53 @@ const props = defineProps({
         </div>
 
         <div class="modal-body">
-          <slot name="body">default body</slot>
+
+
+
+
+
+          <slot name="body">
+
+
+
+            <div>Picked: {{ picked }}</div>
+            <input type="radio" id="one" value="One" v-model="picked" />
+            <label for="one">One</label>
+
+            <input type="radio" id="two" value="Two" v-model="picked" />
+            <label for="two">Two</label>
+            <br/>
+
+
+            
+
+            <div class="checkbox-button">
+              <label>
+                <input type="checkbox" value="1"><span>RED</span>
+              </label>
+            </div>
+
+
+
+
+
+
+
+            <button class="chordConfig">A</button>
+            <button class="chordConfig">B</button>
+            <button class="chordConfig">C</button>
+            <button class="chordConfig">D</button>
+            <button class="chordConfig">E</button>
+            <button class="chordConfig">F</button>
+            <button class="chordConfig">G</button><br/>
+            <button class="chordConfig">&#x266E;</button>
+            <button class="chordConfig">#</button>
+            <button class="chordConfig">b</button><br/>
+            <button class="chordConfig">M</button>
+            <button class="chordConfig">m</button>
+            <button class="chordConfig">dim</button>
+            <button class="chordConfig">aug</button><br/>            
+          </slot>
         </div>
 
         <div class="modal-footer">
@@ -88,4 +151,61 @@ const props = defineProps({
   -webkit-transform: scale(1.1);
   transform: scale(1.1);
 }
+
+
+
+
+
+
+
+
+
+.checkbox-button {
+    margin:4px;
+    background-color:#333;
+    border-radius:4px;
+    border:1px solid #000;
+    overflow:auto;
+    float:left;
+    color: #fff;
+    
+}
+
+.checkbox-button label {
+    float:left;
+    width:100px;
+    cursor: pointer;
+}
+
+.checkbox-button label span {
+    text-align:center;
+    padding:5px 10px;
+    display:block;
+    border-radius:4px;
+}
+
+.checkbox-button label input {
+    position:absolute;
+    top:-20px;
+}
+
+.checkbox-button input:hover + span {
+    background-color:#efE0E0;
+    color: #333;
+}
+
+.checkbox-button input:checked + span {
+    background-color:#911;
+    color:#fff;
+}
+
+.checkbox-button input:checked:hover + span {
+    background-color:#c11;
+    color:#fff;
+}
+
+
+
+
+
 </style>
