@@ -9,16 +9,11 @@ const note = ref("A");
 const noteBis = ref("");
 const quality = ref("");
 
-const buttonClass = "chordConfig";
 
-const picked = ref('One')
+const pickedChord = ref('C');
+const pickedAccidental = ref('becar');
+const pickedQuality  = ref('Maj');
 
-/*
-:class="{ selected: isActive, 'text-danger': hasError }"
-
-chordConfig 
-active: isActive
-*/
 </script>
 
 <template>
@@ -30,61 +25,88 @@ active: isActive
         </div>
 
         <div class="modal-body">
-
-
-
-
-
           <slot name="body">
+            <ul class="chord-selector-chord">
+              <li>
+                <input type="radio" id="A" value="A" name="root" v-model="pickedChord" />
+                <label for="A">A</label>
+              </li>
+              <li>
+                <input type="radio" id="B" value="B" name="root" v-model="pickedChord" />
+                <label for="B">B</label>
+              </li>
+              <li>
+                <input type="radio" id="C" value="C" name="root" v-model="pickedChord" />
+                <label for="C">C</label>
+              </li>
+              <li>
+                <input type="radio" id="D" value="D" name="root" v-model="pickedChord" />
+                <label for="D">D</label>
+              </li>
+              <li>
+                <input type="radio" id="E" value="E" name="root" v-model="pickedChord" />
+                <label for="E">E</label>
+              </li>
+              <li>
+                <input type="radio" id="F" value="F" name="root" v-model="pickedChord" />
+                <label for="F">F</label>
+              </li>
+              <li>
+                <input type="radio" id="G" value="G" name="root" v-model="pickedChord" />
+                <label for="G">G</label>
+              </li>
+            </ul>
+          </slot>
+        </div>
+        <div class="modal-body">
+          <slot name="body">
+            <ul class="chord-selector-chord">
+              <li>
+                <input type="radio" id="becar" value="becar" name="accidentals" v-model="pickedAccidental" />
+                <label for="becar">&#9838</label>
+              </li>
+              <li>
+                <input type="radio" id="diese" value="diese" name="accidentals" v-model="pickedAccidental" />
+                <label for="diese">#</label>
+              </li>
+              <li>
+                <input type="radio" id="bemol" value="bemol" name="accidentals" v-model="pickedAccidental" />
+                <label for="bemol">b</label>
+              </li>
+            </ul>
+          </slot>
+        </div>
+        <div class="modal-body">
+          <slot name="body">
+            <ul class="chord-selector-chord">
+              <li>
+                <input type="radio" id="M" value="M" name="quality" v-model="pickedQuality" />
+                <label for="M">M</label>
+              </li>
+              <li>
+                <input type="radio" id="m" value="m" name="quality" v-model="pickedQuality" />
+                <label for="m">m</label>
+              </li>
+              <li>
+                <input type="radio" id="dim" value="dim" name="quality" v-model="pickedQuality" />
+                <label for="dim">dim</label>
+              </li>
+              <li>
+                <input type="radio" id="aug" value="aug" name="quality" v-model="pickedQuality" />
+                <label for="aug">aug</label>
+              </li>
+            </ul>
 
-
-
-            <div>Picked: {{ picked }}</div>
-            <input type="radio" id="one" value="One" v-model="picked" />
-            <label for="one">One</label>
-
-            <input type="radio" id="two" value="Two" v-model="picked" />
-            <label for="two">Two</label>
-            <br/>
-
-
-            
-
-            <div class="checkbox-button">
-              <label>
-                <input type="checkbox" value="1"><span>RED</span>
-              </label>
-            </div>
-
-
-
-
-
-
-
-            <button class="chordConfig">A</button>
-            <button class="chordConfig">B</button>
-            <button class="chordConfig">C</button>
-            <button class="chordConfig">D</button>
-            <button class="chordConfig">E</button>
-            <button class="chordConfig">F</button>
-            <button class="chordConfig">G</button><br/>
-            <button class="chordConfig">&#x266E;</button>
-            <button class="chordConfig">#</button>
-            <button class="chordConfig">b</button><br/>
-            <button class="chordConfig">M</button>
-            <button class="chordConfig">m</button>
-            <button class="chordConfig">dim</button>
-            <button class="chordConfig">aug</button><br/>            
           </slot>
         </div>
 
+
+
         <div class="modal-footer">
           <slot name="footer">
-            default footer
             <button
               class="modal-default-button"
-              @click="$emit('close')"
+              @click="$emit('close', pickedChord, pickedAccidental, pickedQuality)"
             >OK</button>
           </slot>
         </div>
@@ -107,7 +129,9 @@ active: isActive
 }
 
 .modal-container {
-  width: 300px;
+  display: flex;
+  flex-direction: column;
+  width: 500px;
   margin: auto;
   padding: 20px 30px;
   background-color: #fff;
@@ -122,11 +146,19 @@ active: isActive
 }
 
 .modal-body {
-  margin: 20px 0;
+  margin: 5px 0;
 }
 
 .modal-default-button {
   float: right;
+  font-size: 25px;
+  width: 70px;
+  border-radius: 10px;
+  background: linear-gradient(to bottom left,#f3c278, #ff7300);
+}
+
+.modal-default-button:hover {
+  background: rgb(164, 164, 231);
 }
 
 /*
@@ -157,53 +189,56 @@ active: isActive
 
 
 
-
-
-
-.checkbox-button {
-    margin:4px;
-    background-color:#333;
-    border-radius:4px;
-    border:1px solid #000;
-    overflow:auto;
-    float:left;
-    color: #fff;
-    
+.chord-selector-chord {
+  list-style-type: none;
+  margin: 0 0 0 0;
+  padding: 0;
+  
 }
 
-.checkbox-button label {
-    float:left;
-    width:100px;
-    cursor: pointer;
+.chord-selector-chord li {
+  float: left;
+  margin: 0 5px 0 0;
+  width: 40px;
+  height: 30px;
+  position: relative;
 }
 
-.checkbox-button label span {
-    text-align:center;
-    padding:5px 10px;
-    display:block;
-    border-radius:4px;
+
+.chord-selector-chord label,
+.chord-selector-chord input {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  text-align: center;
+  cursor: pointer;
 }
 
-.checkbox-button label input {
-    position:absolute;
-    top:-20px;
+.chord-selector-chord label {
+  padding: 3px;
+  border: 2px solid #CCC;
+  border-radius: 10px;
+  z-index: 90;
 }
 
-.checkbox-button input:hover + span {
-    background-color:#efE0E0;
-    color: #333;
+
+.chord-selector-chord input[type="radio"] {
+  opacity: 0.01;
+  z-index: 100;
 }
 
-.checkbox-button input:checked + span {
-    background-color:#911;
-    color:#fff;
+.chord-selector-chord input[type="radio"]:checked+label,
+.Checked+label {
+  background: linear-gradient(to bottom left,#f3c278, #ff7300);
 }
 
-.checkbox-button input:checked:hover + span {
-    background-color:#c11;
-    color:#fff;
+.chord-selector-chord input[type="radio"]:hover+label,
+.Checked+label {
+  background: rgb(164, 164, 231);
 }
-
 
 
 

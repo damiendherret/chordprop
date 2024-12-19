@@ -310,6 +310,46 @@ function removeFromProgression(){
 
 
 
+function newFirstChordSelected(pickedChord, pickedAccidental, pickedQuality){
+  console.log("newFirstChordSelected :  " + pickedChord + " / "+ pickedAccidental + " / "+ pickedQuality + " / ");
+  chordProgression.length=0; //clear progression
+  var flatSharp="";
+  switch (pickedAccidental) {
+    case "becar":
+      flatSharp="";
+      break;
+    case "diese":
+      flatSharp="#";
+      break;
+    case "diese":
+      flatSharp="b";
+      break;
+    default:
+      flatSharp="";
+      break;
+  }
+   
+  var newChord = {
+    val: pickedChord+flatSharp,
+    quality: pickedQuality, //M, m, dim, aug
+    harmony: "-",
+    color: 0
+  }
+
+
+  var firstChord = {
+  val: "C",
+  quality: "M", //M, m, dim, aug
+  harmony: "-",
+  color: 0
+}
+
+  chordProgression.push(newChord);
+  proposeChords(newChord);
+  showModal.value = false;
+}
+
+
 
 //---------------------------------------------------------
 // AUDIO
@@ -478,7 +518,7 @@ proposeChords(firstChord);
 
 <Teleport to="body">
   <!-- use the modal component, pass in the prop -->
-  <modal :show="showModal" @close="showModal = false">
+  <modal :show="showModal" @close="newFirstChordSelected">
     <template #header>
       <h3>Choose firts chord</h3>
     </template>
