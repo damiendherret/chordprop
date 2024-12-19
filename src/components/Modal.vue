@@ -12,7 +12,7 @@ const quality = ref("");
 
 const pickedChord = ref('C');
 const pickedAccidental = ref('becar');
-const pickedQuality  = ref('Maj');
+const pickedQuality  = ref('M');
 
 </script>
 
